@@ -1,0 +1,38 @@
+# --- Project Target Directories ---
+bin/
+lib/
+obj/
+
+# --- Executables & Binaries ---
+*.exe
+*.dll
+*.so
+*.dylib
+*.app
+*.bin
+
+# --- Compiler Artifacts (Free Pascal / Delphi) ---
+*.o
+*.ppu
+*.obj
+*.dcu
+*.bak
+*.~*
+*.dsm
+*.drc
+*.map
+
+# --- IDE Specific (Lazarus / Delphi) ---
+lib/
+backup/
+*.lps
+*.lrs
+*.identcache
+*.local
+*.stat
+*.res
+*.aps
+
+# --- OS Generated ---
+Thumbs.db
+.DS_Store

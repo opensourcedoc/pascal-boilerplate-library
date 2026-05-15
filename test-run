@@ -1,0 +1,41 @@
+#!/bin/sh
+
+if ! command -v fpc >/dev/null 2>&1; then
+    echo "No Free Pascal on the system" >&2
+    exit 1
+fi
+
+CWD=$(cd "$(dirname "$0")" && pwd)
+
+. "${CWD}/setting.sh"
+
+if ! [ -f "${LIB_DIR}/${DYNAMIC_LIBRARY}" ]; then
+    echo "Dynamic library not compiled: ${DYNAMIC_LIBRARY}" >&2
+    exit 1
+fi
+
+mkdir -p "$BIN_DIR"
+mkdir -p "$OBJ_DIR"
+
+cp -p "${LIB_DIR}/${DYNAMIC_LIBRARY}" "${BIN_DIR}"
+
+fpc -O3 \
+    "-o${BIN_DIR}/${TEST_EXECUTABLE}" \
+    "-Fu$TEST_DIR" \
+    "-Fi$INCLUDE_DIR" \
+    "-FU$OBJ_DIR" \
+    "-FE$BIN_DIR" \
+    "${TEST_DIR}/${TEST_ENTRY}"
+
+if ! [ -x "${BIN_DIR}/${TEST_EXECUTABLE}" ]; then
+    echo "Test program not compiled: ${BIN_DIR}/${TEST_EXECUTABLE}" >&2
+    exit 1
+fi
+
+if [ "$(uname -s)" = "Darwin" ]; then
+    export DYLD_LIBRARY_PATH="${BIN_DIR}:${DYLD_LIBRARY_PATH}"
+else
+    export LD_LIBRARY_PATH="${BIN_DIR}:${LD_LIBRARY_PATH}"
+fi
+
+exec "${BIN_DIR}/${TEST_EXECUTABLE}"

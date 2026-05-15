@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if ! command -v fpc >/dev/null 2>&1; then
+    echo "No Free Pascal on the system" >&2
+    exit 1
+fi
+
+CWD=$(cd "$(dirname "$0")" && pwd)
+
+. "${CWD}/setting.sh"
+
+mkdir -p "$LIB_DIR"
+mkdir -p "$OBJ_DIR"
+
+fpc -O3 \
+    "-o${LIB_DIR}/${DYNAMIC_LIBRARY}" \
+    "-Fu$SRC_DIR" \
+    "-Fi$INCLUDE_DIR" \
+    "-FU$OBJ_DIR" \
+    "-FE$LIB_DIR" \
+    "${SRC_DIR}/${ENTRY}"
