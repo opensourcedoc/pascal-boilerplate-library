@@ -22,6 +22,7 @@ tmpfile=$(mktemp) || exit 1
 trap 'rm -f "$tmpfile"' EXIT INT TERM
 
 if cp "$srcfile" "$tmpfile" && ptop "$tmpfile" "$srcfile"; then
+    sed 's/[ 	]*$//' "$srcfile" > "$tmpfile" && cp "$tmpfile" "$srcfile"
     echo "Successfully formatted: $srcfile"
 else
     echo "Error: Formatting failed." >&2
