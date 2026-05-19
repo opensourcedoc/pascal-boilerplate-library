@@ -1,0 +1,35 @@
+#!/bin/sh
+
+CWD=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd) || exit 1
+
+if [ -f "${CWD}/setting.sh" ]; then
+    . "${CWD}/setting.sh"
+else
+    echo "Error: setting.sh not found." >&2
+    exit 1
+fi
+
+FORMATER="${CWD}/tools/format"
+
+if [ ! -x "$FORMATER" ]; then
+    echo "Error: Formatter not executable: $FORMATER" >&2
+    exit 1
+fi
+
+if [ ! -d "${SRC_DIR}" ]; then
+    echo "Error: SRC_DIR does not exist: ${SRC_DIR}" >&2
+    exit 1
+fi
+
+find "${SRC_DIR}" -type f | while IFS= read -r file; do
+    if ! "$FORMATER" "$file"; then
+        echo "Error: Stop execution. Formatting failed on: $file" >&2
+        exit 1
+    fi
+done
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+echo "All files formatted successfully."

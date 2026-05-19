@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if ! command -v ptop >/dev/null 2>&1; then
+    echo "Error: ptop is not installed on the system." >&2
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 [source.pas]" >&2
+    exit 1
+fi
+
+srcdir=$(CDPATH='' cd -- "$(dirname -- "$1")" && pwd) || exit 1
+srcfile="$srcdir/$(basename -- "$1")"
+
+if ! [ -f "$srcfile" ]; then
+    echo "Error: File does not exist: $srcfile" >&2
+    exit 1
+fi
+
+tmpfile=$(mktemp) || exit 1
+trap 'rm -f "$tmpfile"' EXIT INT TERM
+
+if cp "$srcfile" "$tmpfile" && ptop "$tmpfile" "$srcfile"; then
+    echo "Successfully formatted: $srcfile"
+else
+    echo "Error: Formatting failed." >&2
+    exit 1
+fi
