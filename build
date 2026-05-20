@@ -12,7 +12,24 @@ CWD=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$LIB_DIR"
 mkdir -p "$OBJ_DIR"
 
-fpc -O3 \
+COMPILE_MODE=$(echo "$1" | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+if [ "$COMPILE_MODE" = "DEBUG" ]; then
+    COMPILER_FLAG="-dDEBUG -g -gl -Cr -Ct -Co -Ci -Sa"
+else
+    COMPILER_FLAG="-O2 -Xs -CX -XX"
+fi
+
+FPC_FLAGS="${FPC_FLAGS:-}"
+
+if [ -n "$FPC_FLAGS" ] || [ -n "$COMPILER_FLAG" ]; then
+    set -- $FPC_FLAGS $COMPILER_FLAG
+else
+    set -- ""
+fi
+
+[ "$1" = "" ] && shift
+
+fpc "$@" \
     "-o${LIB_DIR}/${DYNAMIC_LIBRARY}" \
     "-Fu$SRC_DIR" \
     "-Fi$INCLUDE_DIR" \

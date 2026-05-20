@@ -48,6 +48,24 @@ Push your modification to your own repo:
 $ git push
 ```
 
+## Build Configurations
+
+### Debug Mode
+
+Compile the application with runtime checks and debugging symbols enabled:
+
+```shell
+$ ./build debug
+```
+
+### Custom Compiler Flags
+
+You can pass custom parameters to the Free Pascal Compiler by overriding the `FPC_FLAGS` environment variable:
+
+```shell
+$ FPC_FLAGS="-vwnh -Sew" ./build
+```
+
 ## Linting Code
 
 You can enforce linting by enabling the `-vwnh -Sew` flags when compiling your Pascal code. In this mode, Free Pascal displays all warnings, notes, and hints, but will only fail the build if a warning (or error) is encountered.
