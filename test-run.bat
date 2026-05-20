@@ -20,7 +20,7 @@ if not exist "%LIB_DIR%%DYNAMIC_LIBRARY%" (
 
 copy "%LIB_DIR%%DYNAMIC_LIBRARY%" "%BIN_DIR%"
 
-fpc -O3 ^
+fpc -Sa -O3 ^
     "-o%BIN_DIR%%TEST_EXECUTABLE%" ^
     "-Fu%TEST_DIR%" ^
     "-Fi%INCLUDE_DIR%" ^
