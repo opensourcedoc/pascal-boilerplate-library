@@ -5,9 +5,16 @@ if ! command -v fpc >/dev/null 2>&1; then
     exit 1
 fi
 
-CWD=$(cd "$(dirname "$0")" && pwd)
+CWD=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd) || exit 1
 
-. "${CWD}/setting.sh"
+SETTING="${CWD}/setting.sh"
+
+if [ -f "$SETTING" ]; then
+    . "$SETTING"
+else
+    echo "Error: Unable to load the repository setting: $SETTING" >&2
+    exit 1
+fi
 
 if ! [ -f "${LIB_DIR}/${DYNAMIC_LIBRARY}" ]; then
     echo "Dynamic library not compiled: ${DYNAMIC_LIBRARY}" >&2
@@ -21,10 +28,10 @@ cp -p "${LIB_DIR}/${DYNAMIC_LIBRARY}" "${BIN_DIR}"
 
 fpc -Sa -O3 \
     "-o${BIN_DIR}/${TEST_EXECUTABLE}" \
-    "-Fu$TEST_DIR" \
-    "-Fi$INCLUDE_DIR" \
-    "-FU$OBJ_DIR" \
-    "-FE$BIN_DIR" \
+    "-Fu${TEST_DIR}" \
+    "-Fi${INCLUDE_DIR}" \
+    "-FU${OBJ_DIR}" \
+    "-FE${BIN_DIR}" \
     "${TEST_DIR}/${TEST_ENTRY}"
 
 if ! [ -x "${BIN_DIR}/${TEST_EXECUTABLE}" ]; then

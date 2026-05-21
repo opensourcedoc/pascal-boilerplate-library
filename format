@@ -9,7 +9,7 @@ else
     exit 1
 fi
 
-FORMATER="${CWD}/tools/format"
+FORMATER="${CWD}/tools/bin/format"
 
 if [ ! -x "$FORMATER" ]; then
     echo "Error: Formatter not executable: $FORMATER" >&2
@@ -17,19 +17,17 @@ if [ ! -x "$FORMATER" ]; then
 fi
 
 if [ ! -d "${SRC_DIR}" ]; then
-    echo "Error: SRC_DIR does not exist: ${SRC_DIR}" >&2
+    echo "Error: the source directory does not exist: ${SRC_DIR}" >&2
     exit 1
 fi
 
-find "${SRC_DIR}" -type f | while IFS= read -r file; do
+while IFS= read -r file; do
     if ! "$FORMATER" "$file"; then
         echo "Error: Stop execution. Formatting failed on: $file" >&2
         exit 1
     fi
-done
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
+done << EOF
+$(find "${SRC_DIR}" "${TEST_DIR}" -type f)
+EOF
 
 echo "All files formatted successfully."

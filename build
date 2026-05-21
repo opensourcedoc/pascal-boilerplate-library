@@ -5,14 +5,21 @@ if ! command -v fpc >/dev/null 2>&1; then
     exit 1
 fi
 
-CWD=$(cd "$(dirname "$0")" && pwd)
+CWD=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd) || exit 1
 
-. "${CWD}/setting.sh"
+SETTING="${CWD}/setting.sh"
+
+if [ -f "$SETTING" ]; then
+    . "$SETTING"
+else
+    echo "Error: Unable to load the repository setting: $SETTING" >&2
+    exit 1
+fi
 
 mkdir -p "$LIB_DIR"
 mkdir -p "$OBJ_DIR"
 
-COMPILE_MODE=$(echo "$1" | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+COMPILE_MODE=$(echo "$1" | tr '[:lower:]' '[:upper:]')
 if [ "$COMPILE_MODE" = "DEBUG" ]; then
     COMPILER_FLAG="-dDEBUG -g -gl -Cr -Ct -Co -Ci -Sa"
 else
@@ -21,18 +28,14 @@ fi
 
 FPC_FLAGS="${FPC_FLAGS:-}"
 
-if [ -n "$FPC_FLAGS" ] || [ -n "$COMPILER_FLAG" ]; then
-    set -- $FPC_FLAGS $COMPILER_FLAG
-else
-    set -- ""
-fi
-
-[ "$1" = "" ] && shift
+set --
+[ -n "$FPC_FLAGS" ]     && set -- $@ $FPC_FLAGS
+[ -n "$COMPILER_FLAG" ] && set -- $@ $COMPILER_FLAG
 
 fpc "$@" \
     "-o${LIB_DIR}/${DYNAMIC_LIBRARY}" \
-    "-Fu$SRC_DIR" \
-    "-Fi$INCLUDE_DIR" \
-    "-FU$OBJ_DIR" \
-    "-FE$LIB_DIR" \
+    "-Fu${SRC_DIR}" \
+    "-Fi${INCLUDE_DIR}" \
+    "-FU${OBJ_DIR}" \
+    "-FE${LIB_DIR}" \
     "${SRC_DIR}/${ENTRY}"

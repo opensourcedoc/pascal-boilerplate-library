@@ -18,11 +18,12 @@ if ! [ -f "$srcfile" ]; then
     exit 1
 fi
 
-tmpfile=$(mktemp) || exit 1
-trap 'rm -f "$tmpfile"' EXIT INT TERM
+tmp_ptop=$(mktemp) || exit 1
+tmp_sed=$(mktemp) || exit 1
+trap 'rm -f "$tmp_ptop" "$tmp_sed"' EXIT INT TERM
 
-if cp "$srcfile" "$tmpfile" && ptop "$tmpfile" "$srcfile"; then
-    sed 's/[ 	]*$//' "$srcfile" > "$tmpfile" && cp "$tmpfile" "$srcfile"
+if ptop "$srcfile" "$tmp_ptop"; then
+    sed 's/[[:space:]]*$//' "$tmp_ptop" > "$tmp_sed" && cp "$tmp_sed" "$srcfile"
     echo "Successfully formatted: $srcfile"
 else
     echo "Error: Formatting failed." >&2
