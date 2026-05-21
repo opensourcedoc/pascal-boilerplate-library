@@ -66,6 +66,47 @@ You can pass custom parameters to the Free Pascal Compiler by overriding the `FP
 $ FPC_FLAGS="-vwnh -Sew" ./build
 ```
 
+## Smoke Test
+
+This repository provides lightweight, pure POSIX-compliant shell functions for automated smoke testing. They run in subshells to isolate variables and use `trap` to ensure secure temporary file cleanup.
+
+### Test Core Functions
+
+* **`SMOKE_RUN`**: Simply runs the application with parameters and prints a `[Smoke]` log.
+* **`EXPECT_SUCCEED`**: Asserts the command exits with `0`. Logs `[Expect]` and outputs `stdout` on success; logs `[Fail]` and outputs `stderr` on failure.
+* **`EXPECT_FAIL`**: Asserts the command exits with non-`0`. Logs `[Expect]` and outputs `stderr` on success; logs `[Fail]` and outputs `stdout` on failure.
+
+### Usage Example
+
+It is highly recommended to track and count failed tests during your test suite execution:
+
+```bash
+FAILED_TESTS=0
+
+RUN_TEST() {
+    "$@" || FAILED_TESTS=$((FAILED_TESTS + 1))
+}
+
+# Basic Smoke Tests
+RUN_TEST SMOKE_RUN "$PROGRAM"
+RUN_TEST SMOKE_RUN "$PROGRAM" -v
+RUN_TEST SMOKE_RUN "$PROGRAM" --version
+RUN_TEST SMOKE_RUN "$PROGRAM" -h
+RUN_TEST SMOKE_RUN "$PROGRAM" --help
+
+# Advanced Assertions
+RUN_TEST EXPECT_SUCCEED "$PROGRAM" --config valid.json
+RUN_TEST EXPECT_FAIL    "$PROGRAM" --config missing.json
+
+# Test Result Evaluation
+if [ "$FAILED_TESTS" -ne 0 ]; then
+    echo "[Result] $FAILED_TESTS test(s) failed." >&2
+    exit 1
+fi
+
+echo "[Result] All tests passed successfully."
+```
+
 ## Linting Code
 
 You can enforce linting by enabling the `-vwnh -Sew` flags when compiling your Pascal code. In this mode, Free Pascal displays all warnings, notes, and hints, but will only fail the build if a warning (or error) is encountered.
