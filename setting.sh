@@ -1,8 +1,25 @@
-#!/bin/sh
+IS_WINDOWS ()
+{
+    case "$(uname -s)" in
+        CYGWIN*|MINGW*|MSYS*)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+IS_MACOS ()
+{
+    [ "$(uname -s)" = "Darwin" ]
+}
 
 ENTRY=Logic.pas
-LIBRARY=logic
-if [ "$(uname -s)" = "Darwin" ]; then
+LIBRARY=$(echo "${ENTRY%.*}" | tr '[:upper:]' '[:lower:]')
+if IS_WINDOWS; then
+    DYNAMIC_LIBRARY="${LIBRARY}.dll"
+elif IS_MACOS; then
     DYNAMIC_LIBRARY="lib${LIBRARY}.dylib"
 else
     DYNAMIC_LIBRARY="lib${LIBRARY}.so"
@@ -10,7 +27,11 @@ fi
 
 TEST_ENTRY=TestMain.lpr
 TEST_PROGRAM=TestMain
-TEST_EXECUTABLE="${TEST_PROGRAM}"
+if IS_WINDOWS; then
+    TEST_EXECUTABLE="${TEST_PROGRAM}.exe"
+else
+    TEST_EXECUTABLE="${TEST_PROGRAM}"
+fi
 
 CWD=$(cd "$(dirname "$0")" && pwd)
 
