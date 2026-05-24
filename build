@@ -1,5 +1,14 @@
 #!/bin/sh
 
+CYGPATH ()
+{
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$1"
+    else
+        echo "$1"
+    fi
+}
+
 if ! command -v fpc >/dev/null 2>&1; then
     echo "No Free Pascal on the system" >&2
     exit 1
@@ -33,9 +42,9 @@ set --
 [ -n "$COMPILER_FLAG" ] && set -- $@ $COMPILER_FLAG
 
 fpc "$@" \
-    "-o${LIB_DIR}/${DYNAMIC_LIBRARY}" \
-    "-Fu${SRC_DIR}" \
-    "-Fi${INCLUDE_DIR}" \
-    "-FU${OBJ_DIR}" \
-    "-FE${LIB_DIR}" \
-    "${SRC_DIR}/${ENTRY}"
+    "-o$(CYGPATH "${LIB_DIR}/${DYNAMIC_LIBRARY}")" \
+    "-Fu$(CYGPATH "${SRC_DIR}")" \
+    "-Fi$(CYGPATH "${INCLUDE_DIR}")" \
+    "-FU$(CYGPATH "${OBJ_DIR}")" \
+    "-FE$(CYGPATH "${LIB_DIR}")" \
+    "$(CYGPATH "${SRC_DIR}/${ENTRY}")"

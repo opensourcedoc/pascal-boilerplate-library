@@ -1,5 +1,14 @@
 #!/bin/sh
 
+CYGPATH ()
+{
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$1"
+    else
+        echo "$1"
+    fi
+}
+
 if ! command -v fpc >/dev/null 2>&1; then
     echo "No Free Pascal on the system" >&2
     exit 1
@@ -26,13 +35,13 @@ mkdir -p "$OBJ_DIR"
 
 cp -p "${LIB_DIR}/${DYNAMIC_LIBRARY}" "${BIN_DIR}"
 
-fpc -Sa -O3 \
-    "-o${BIN_DIR}/${TEST_EXECUTABLE}" \
-    "-Fu${TEST_DIR}" \
-    "-Fi${INCLUDE_DIR}" \
-    "-FU${OBJ_DIR}" \
-    "-FE${BIN_DIR}" \
-    "${TEST_DIR}/${TEST_ENTRY}"
+fpc -Sa -O2 -Xs -CX -XX \
+    "-o$(CYGPATH "${BIN_DIR}/${TEST_EXECUTABLE}")" \
+    "-Fu$(CYGPATH "${TEST_DIR}")" \
+    "-Fi$(CYGPATH "${INCLUDE_DIR}")" \
+    "-FU$(CYGPATH "${OBJ_DIR}")" \
+    "-FE$(CYGPATH "${BIN_DIR}")" \
+    "$(CYGPATH "${TEST_DIR}/${TEST_ENTRY}")"
 
 if ! [ -x "${BIN_DIR}/${TEST_EXECUTABLE}" ]; then
     echo "Test program not compiled: ${BIN_DIR}/${TEST_EXECUTABLE}" >&2

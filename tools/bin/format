@@ -1,5 +1,14 @@
 #!/bin/sh
 
+CYGPATH ()
+{
+    if command -v cygpath >/dev/null 2>&1; then
+        cygpath -w "$1"
+    else
+        echo "$1"
+    fi
+}
+
 if ! command -v ptop >/dev/null 2>&1; then
     echo "Error: ptop is not installed on the system." >&2
     exit 1
@@ -22,7 +31,7 @@ tmp_ptop=$(mktemp) || exit 1
 tmp_sed=$(mktemp) || exit 1
 trap 'rm -f "$tmp_ptop" "$tmp_sed"' EXIT INT TERM
 
-if ptop "$srcfile" "$tmp_ptop"; then
+if ptop "$(CYGPATH "${srcfile}")" "$(CYGPATH "${tmp_ptop}")"; then
     sed 's/[[:space:]]*$//' "$tmp_ptop" > "$tmp_sed" && cp "$tmp_sed" "$srcfile"
     echo "Successfully formatted: $srcfile"
 else

@@ -66,6 +66,12 @@ You can pass custom parameters to the Free Pascal Compiler by overriding the `FP
 $ FPC_FLAGS="-vwnh -Sew" ./build
 ```
 
+## Linting Code
+
+You can enforce linting by enabling the `-vwnh -Sew` flags when compiling your Pascal code. In this mode, Free Pascal displays all warnings, notes, and hints, but will only fail the build if a warning (or error) is encountered.
+
+Since these compiler messages can be quite chatty for some developers, linting is disabled by default.
+
 ## Smoke Test
 
 This repository provides lightweight, pure POSIX-compliant shell functions for automated smoke testing. They run in subshells to isolate variables and use `trap` to ensure secure temporary file cleanup.
@@ -107,11 +113,16 @@ fi
 echo "[Result] All tests passed successfully."
 ```
 
-## Linting Code
+## Note for Windows Users
 
-You can enforce linting by enabling the `-vwnh -Sew` flags when compiling your Pascal code. In this mode, Free Pascal displays all warnings, notes, and hints, but will only fail the build if a warning (or error) is encountered.
+You can run the POSIX shell scripts directly within MSYS2. Consequently, the Batch equivalents have been deprecated.
 
-Since these compiler messages can be quite chatty for some developers, linting is disabled by default.
+To run these scripts in MSYS2, add `fpc.exe` to your environment `PATH`:
+
+```bash
+PATH="$PATH:/C/FPC/3.3.2/bin/i386-win32/"
+export PATH
+```
 
 ## Known Issues
 
