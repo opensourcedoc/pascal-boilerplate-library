@@ -5,6 +5,16 @@ A Free Pascal boilerplate project to build a Pascal based dynamic library.
 ## System Requirements
 
 * Free Pascal
+* POSIX environment. MSYS2 is supported as well
+
+## 📌 Project Status
+
+- **Development:** Completed ✅
+- **Current Phase:** Open for discussion & feedback 💬
+- **Focus:** Collecting user input to refine usability and improve documentation
+- **Next Steps:** Evaluate suggestions, adjust boilerplate structure if needed
+
+👉 We welcome feedback! Please open an issue or start a discussion.
 
 ## Usage
 
