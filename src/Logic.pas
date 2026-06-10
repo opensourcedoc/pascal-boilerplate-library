@@ -2,7 +2,9 @@
 
 library Logic;
 
-{$Include Type.inc}
+{$include Platform.inc}
+
+{$include Type.inc}
 
 // Standard C compatible ABI.
 function add(a: Int; b: Int): Int; cdecl;
