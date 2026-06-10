@@ -1,10 +1,6 @@
 {$ifndef COMMON_TYPE_INC}
 {$define COMMON_TYPE_INC}
 
-{$ifndef FPC}
-  {$define DELPHI}
-{$endif}
-
 Type 
   Int = Integer;
 
@@ -16,6 +12,8 @@ Type
 
   (* Int64 is builtin in
       both Delphi and Free Pascal. *)
+
+  UInt = Cardinal;
 
   {$ifdef FPC}
   UInt8 = Byte;
